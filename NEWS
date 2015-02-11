@@ -1,5 +1,6 @@
 2015-02-11 Soeren Sonnenburg <sonne@debian.org>
 
+	* SHOGUN Release version 4.0.1 (libshogun 17.0, data 0.9, parameter 1)
 	* Bugfixes:
 		- fix segfaulting python_modular with swig >= 3.0.0
 			- SWIG >= 3.0.0 blows up Python_modular with '-modernargs'-flag
