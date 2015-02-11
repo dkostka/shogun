@@ -360,7 +360,8 @@ template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len
 																								\
 template<> void sg_generic_free<type >(type* ptr)												\
 {																								\
-	delete[] ptr;																				\
+	if (!ptr)																				\
+		delete[] ptr;																				\
 }
 
 #else // TRACE_MEMORY_ALLOCS
@@ -390,7 +391,8 @@ template<> type* sg_generic_realloc<type >(type* ptr, size_t old_len, size_t len
 																	\
 template<> void sg_generic_free<type >(type* ptr)					\
 {																	\
-	delete[] ptr;													\
+	if (!ptr)														\
+		delete[] ptr;													\
 }
 #endif // TRACE_MEMORY_ALLOCS
 
