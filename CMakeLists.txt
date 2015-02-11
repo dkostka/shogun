@@ -1015,19 +1015,17 @@ IF(PythonModular OR PythonStatic)
 
 	IF(PythonModular)
 		#custom swig flags for python modular interface
-		SET(TARGET_SWIGFLAGS "-builtin\;-modern")
+		SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
 
-		# SWIG >= 3.0.0 blows up Python_modular with '-modernargs'-flag
-		# reference: https://github.com/swig/swig/issues/256
-		IF("${SWIG_VERSION}" VERSION_LESS "3.0.0")
-			SET(TARGET_SWIGFLAGS "${TARGET_SWIGFLAGS}\;-modernargs")
-		ELSE("${SWIG_VERSION}" VERSION_LESS "3.0.0")
-			SET(TARGET_SWIGFLAGS "${TARGET_SWIGFLAGS}\;-nomodernargs")
-		ENDIF("${SWIG_VERSION}" VERSION_LESS "3.0.0")
+		# SWIG >= 3.0.0 blows up Python_modular when '-fastunpack'-flag
+		# is not set.  See reference: https://github.com/swig/swig/issues/256
+		IF(NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0")
+			SET(TARGET_SWIGFLAGS "${TARGET_SWIGFLAGS}\;-fastunpack")
+		ENDIF(NOT "${SWIG_VERSION}" VERSION_LESS "3.0.0")
 
 		#custom swig flags for Python3
 		IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
-			SET(TARGET_SWIGFLAGS "${TARGET_SWIGFLAGS}\;-py3")
+			SET(TARGET_SWIGFLAGS "-py3\;${TARGET_SWIGFLAGS}")
 			LIST(APPEND DEFINES PYTHON3)
 		ENDIF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
 
