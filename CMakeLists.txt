@@ -1006,34 +1006,42 @@ IF(SWIG_WITH_SYSTEM_CFLAGS)
 ENDIF(SWIG_WITH_SYSTEM_CFLAGS)
 
 # python modular
-IF (PythonModular OR PythonStatic)
+IF(PythonModular OR PythonStatic)
 	# find python library for the found python interpreter
 	# i.e. versions should match!
 	FIND_PACKAGE(PythonLibs REQUIRED)
 	FIND_PACKAGE(NumPy REQUIRED)
-
 	LIST(APPEND DEFINES HAVE_PYTHON)
 
 	IF(PythonModular)
 		#custom swig flags for python modular interface
+		SET(TARGET_SWIGFLAGS "-builtin\;-modern")
+
+		# SWIG >= 3.0.0 blows up Python_modular with '-modernargs'-flag
+		# reference: https://github.com/swig/swig/issues/256
+		IF("${SWIG_VERSION}" VERSION_LESS "3.0.0")
+			SET(TARGET_SWIGFLAGS "${TARGET_SWIGFLAGS}\;-modernargs")
+		ELSE("${SWIG_VERSION}" VERSION_LESS "3.0.0")
+			SET(TARGET_SWIGFLAGS "${TARGET_SWIGFLAGS}\;-nomodernargs")
+		ENDIF("${SWIG_VERSION}" VERSION_LESS "3.0.0")
+
+		#custom swig flags for Python3
 		IF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
-			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs\;-py3")
+			SET(TARGET_SWIGFLAGS "${TARGET_SWIGFLAGS}\;-py3")
 			LIST(APPEND DEFINES PYTHON3)
-		ELSE()
-			SET(TARGET_SWIGFLAGS "-builtin\;-modern\;-modernargs")
-		ENDIF()
+		ENDIF(${PYTHON_VERSION_MAJOR} VERSION_EQUAL 3)
 
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
-		ENDIF()
-	ENDIF()
+		ENDIF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_modular)
+	ENDIF(PythonModular)
 
 	IF(PythonStatic)
 		IF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_static)
 			add_subdirectory(${CMAKE_SOURCE_DIR}/src/interfaces/python_static)
-		ENDIF()
-	ENDIF()
-ENDIF()
+		ENDIF(EXISTS ${CMAKE_SOURCE_DIR}/src/interfaces/python_static)
+	ENDIF(PythonStatic)
+ENDIF(PythonModular OR PythonStatic)
 
 # lua modular
 IF (LuaModular)
